@@ -5,6 +5,7 @@ import EditProfileProject from "./editProfileProject";
 import EditProfileSkillLanguage from "./editProfileSkillLanguage";
 import EditProfileTraining from "./editProfileTraining";
 import { getProjectListForUserId } from "../services/fakeProjectService";
+import { getEducationListForUserId } from "../services/fakeEducationService";
 
 const EDIT_TABS = [
   { name: "project", label: "Add/Edit Project", Component: EditProfileProject },
@@ -34,13 +35,12 @@ function EditProfile(props) {
   const userId = props.match.params.id;
 
   const [editTab, setEditTab] = useState(EDIT_TABS[0]);
-  let refreshFuncForEditTab = loadProjects;
 
   const [data, setData] = useState({
     project: {
       list: [],
       current: {
-        id: null,
+        id: "",
         user_id: userId,
         title: "",
         subtitle: "",
@@ -49,7 +49,16 @@ function EditProfile(props) {
         test_link: "",
       },
     },
-    education: { list: [], current: {} },
+    education: {
+      list: [],
+      current: {
+        id: "",
+        user_id: userId,
+        qualification: "",
+        institute: "",
+        score: "",
+      },
+    },
     experience: { list: [], current: {} },
     skillLanguage: { list: [], current: {} },
     training: { list: [], current: {} },
@@ -58,11 +67,24 @@ function EditProfile(props) {
   async function loadProjects() {
     const projects = await getProjectListForUserId(userId);
     setData({ ...data, project: { ...data.project, list: projects } });
-    console.log("projects :>> ", projects);
+  }
+
+  async function loadEducations() {
+    const educations = await getEducationListForUserId(userId);
+    setData({ ...data, education: { ...data.education, list: educations } });
   }
 
   useEffect(() => {
-    loadProjects();
+    async function loadAllData() {
+      const projects = await getProjectListForUserId(userId);
+      const educations = await getEducationListForUserId(userId);
+      setData({
+        ...data,
+        project: { ...data.project, list: projects },
+        education: { ...data.education, list: educations },
+      });
+    }
+    loadAllData();
   }, []);
 
   const padSelectedRef = useRef(null);
@@ -73,15 +95,6 @@ function EditProfile(props) {
         block: "center",
         inline: "center",
       });
-
-    const refreshFuncs = {
-      project: loadProjects,
-      // education: loadEducations,
-      // experience: loadExperiences,
-      // skillLanguage: loadSkillsLanguages,
-      // training: loadTrainings,
-    };
-    refreshFuncForEditTab = refreshFuncs[editTab.name];
   }, [editTab]);
 
   const handleSetData = (pData) => {
@@ -90,6 +103,14 @@ function EditProfile(props) {
     setData(currentData);
   };
 
+  const refreshFuncs = {
+    project: loadProjects,
+    education: loadEducations,
+    // experience: loadExperiences,
+    // skillLanguage: loadSkillsLanguages,
+    // training: loadTrainings,
+  };
+  let refreshFuncForEditTab = refreshFuncs[editTab.name];
   return (
     <React.Fragment>
       <div className="d-flex justify-content-center w-100">
@@ -98,9 +119,9 @@ function EditProfile(props) {
             <span
               className={
                 "pad__select c-pointer" +
-                (item.name == editTab.name ? " pad__select_selected" : "")
+                (item.name === editTab.name ? " pad__select_selected" : "")
               }
-              ref={item.name == editTab.name ? padSelectedRef : null}
+              ref={item.name === editTab.name ? padSelectedRef : null}
               onClick={() => {
                 setEditTab(item);
               }}
