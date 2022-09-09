@@ -1,14 +1,18 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 
 function Home(props) {
+  useEffect(() => {
+    props.loadUserList();
+  }, []);
   return (
     <div className="container container_max-width_500px">
-      <a
-        href="/create-profile"
+      <Link
+        to="/create-profile"
         className="btn btn-outline-primary btn-sm mt-2 mb-2"
       >
         Create Profile
-      </a>
+      </Link>
       <table className="table table-light table-scroll">
         <thead className="thead-scroll">
           <tr className="tr-scroll">
@@ -18,160 +22,33 @@ function Home(props) {
           </tr>
         </thead>
         <tbody className="tbody-scroll">
-          <tr className="tr-scroll">
-            <td>
-              <a href="#" className="text-decoration-none text-primary">
-                John
-              </a>
-            </td>
-            <td>Lorem ipsum dolor sit amet.</td>
-            <td>
-              <div className="d-flex flex-column align-items-center">
-                <button className="btn btn-warning btn-sm mb-2">Edit</button>
-                <button className="btn btn-danger btn-sm">Delete</button>
-              </div>
-            </td>
-          </tr>
-          <tr className="tr-scroll">
-            <td>
-              <a href="#" className="text-decoration-none text-primary">
-                Mohan Singh
-              </a>
-            </td>
-            <td>Lorem ipsum dolor sit amet.</td>
-            <td>
-              <div className="d-flex flex-column align-items-center">
-                <button className="btn btn-warning btn-sm mb-2">Edit</button>
-                <button className="btn btn-danger btn-sm">Delete</button>
-              </div>
-            </td>
-          </tr>
-          <tr className="tr-scroll">
-            <td>
-              <a href="#" className="text-decoration-none text-primary">
-                Sunil Pandey
-              </a>
-            </td>
-            <td>Lorem ipsum dolor sit amet.</td>
-            <td>
-              <div className="d-flex flex-column align-items-center">
-                <button className="btn btn-warning btn-sm mb-2">Edit</button>
-                <button className="btn btn-danger btn-sm">Delete</button>
-              </div>
-            </td>
-          </tr>
-          <tr className="tr-scroll">
-            <td>
-              <a href="#" className="text-decoration-none text-primary">
-                Sunil Pandey
-              </a>
-            </td>
-            <td>Lorem ipsum dolor sit amet.</td>
-            <td>
-              <div className="d-flex flex-column align-items-center">
-                <button className="btn btn-warning btn-sm mb-2">Edit</button>
-                <button className="btn btn-danger btn-sm">Delete</button>
-              </div>
-            </td>
-          </tr>
-          <tr className="tr-scroll">
-            <td>
-              <a href="#" className="text-decoration-none text-primary">
-                Sunil Pandey
-              </a>
-            </td>
-            <td>Lorem ipsum dolor sit amet.</td>
-            <td>
-              <div className="d-flex flex-column align-items-center">
-                <button className="btn btn-warning btn-sm mb-2">Edit</button>
-                <button className="btn btn-danger btn-sm">Delete</button>
-              </div>
-            </td>
-          </tr>
-          <tr className="tr-scroll">
-            <td>
-              <a href="#" className="text-decoration-none text-primary">
-                Sunil Pandey
-              </a>
-            </td>
-            <td>Lorem ipsum dolor sit amet.</td>
-            <td>
-              <div className="d-flex flex-column align-items-center">
-                <button className="btn btn-warning btn-sm mb-2">Edit</button>
-                <button className="btn btn-danger btn-sm">Delete</button>
-              </div>
-            </td>
-          </tr>
-          <tr className="tr-scroll">
-            <td>
-              <a href="#" className="text-decoration-none text-primary">
-                Sunil Pandey
-              </a>
-            </td>
-            <td>Lorem ipsum dolor sit amet.</td>
-            <td>
-              <div className="d-flex flex-column align-items-center">
-                <button className="btn btn-warning btn-sm mb-2">Edit</button>
-                <button className="btn btn-danger btn-sm">Delete</button>
-              </div>
-            </td>
-          </tr>
-          <tr className="tr-scroll">
-            <td>
-              <a href="#" className="text-decoration-none text-primary">
-                Sunil Pandey
-              </a>
-            </td>
-            <td>Lorem ipsum dolor sit amet.</td>
-            <td>
-              <div className="d-flex flex-column align-items-center">
-                <button className="btn btn-warning btn-sm mb-2">Edit</button>
-                <button className="btn btn-danger btn-sm">Delete</button>
-              </div>
-            </td>
-          </tr>
-          <tr className="tr-scroll">
-            <td>
-              <a href="#" className="text-decoration-none text-primary">
-                Sunil Pandey
-              </a>
-            </td>
-            <td>Lorem ipsum dolor sit amet.</td>
-            <td>
-              <div className="d-flex flex-column align-items-center">
-                <button className="btn btn-warning btn-sm mb-2">Edit</button>
-                <button className="btn btn-danger btn-sm">Delete</button>
-              </div>
-            </td>
-          </tr>
-          <tr className="tr-scroll">
-            <td>
-              <a href="#" className="text-decoration-none text-primary">
-                Sunil Pandey
-              </a>
-            </td>
-            <td>Lorem ipsum dolor sit amet.</td>
-            <td>
-              <div className="d-flex flex-column align-items-center">
-                <button className="btn btn-warning btn-sm mb-2">Edit</button>
-                <button className="btn btn-danger btn-sm">Delete</button>
-              </div>
-            </td>
-          </tr>
-          <tr className="tr-scroll">
-            <td>
-              <a href="#" className="text-decoration-none text-primary">
-                Sunil Pandey
-              </a>
-            </td>
-            <td>Lorem ipsum dolor sit amet.</td>
-            <td>
-              <div className="d-flex flex-column align-items-center">
-                <button className="btn btn-warning btn-sm mb-2">Edit</button>
-                <button className="btn btn-danger btn-sm">Delete</button>
-              </div>
-            </td>
-          </tr>
+          {props.userList.map((user) => {
+            return (
+              <tr key={user.id} className="tr-scroll">
+                <td>
+                  <a href="#" className="text-decoration-none text-primary">
+                    {`${user.first_name} ${user.last_name}`}
+                  </a>
+                </td>
+                <td>
+                  {user.profile_statement.length > 30
+                    ? user.profile_statement.substr(0, 30) + "..."
+                    : user.profile_statement}
+                </td>
+                <td>
+                  <div className="d-flex flex-column align-items-center">
+                    <Link
+                      to={`${user.id}/edit-profile`}
+                      className="btn btn-warning btn-sm mb-2"
+                    >
+                      Edit
+                    </Link>
+                    <button className="btn btn-danger btn-sm">Delete</button>
+                  </div>
+                </td>
+              </tr>
+            );
+          })}
         </tbody>
       </table>
     </div>
