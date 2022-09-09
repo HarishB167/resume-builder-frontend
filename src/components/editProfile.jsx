@@ -4,6 +4,7 @@ import EditProfileExperience from "./editProfileExperience";
 import EditProfileProject from "./editProfileProject";
 import EditProfileSkillLanguage from "./editProfileSkillLanguage";
 import EditProfileTraining from "./editProfileTraining";
+import { getProjectListForUserId } from "../services/fakeProjectService";
 
 const EDIT_TABS = [
   { name: "project", label: "Add/Edit Project", Component: EditProfileProject },
@@ -30,9 +31,41 @@ const EDIT_TABS = [
 ];
 
 function EditProfile(props) {
-  const [editTab, setEditTab] = useState(EDIT_TABS[0]);
-  const padSelectedRef = useRef(null);
+  const userId = props.match.params.id;
 
+  const [editTab, setEditTab] = useState(EDIT_TABS[0]);
+  let refreshFuncForEditTab = loadProjects;
+
+  const [data, setData] = useState({
+    project: {
+      list: [],
+      current: {
+        id: null,
+        user_id: userId,
+        title: "",
+        subtitle: "",
+        description: "",
+        git_link: "",
+        test_link: "",
+      },
+    },
+    education: { list: [], current: {} },
+    experience: { list: [], current: {} },
+    skillLanguage: { list: [], current: {} },
+    training: { list: [], current: {} },
+  });
+
+  async function loadProjects() {
+    const projects = await getProjectListForUserId(userId);
+    setData({ ...data, project: { ...data.project, list: projects } });
+    console.log("projects :>> ", projects);
+  }
+
+  useEffect(() => {
+    loadProjects();
+  }, []);
+
+  const padSelectedRef = useRef(null);
   useEffect(() => {
     if (padSelectedRef.current)
       padSelectedRef.current.scrollIntoView({
@@ -40,7 +73,22 @@ function EditProfile(props) {
         block: "center",
         inline: "center",
       });
+
+    const refreshFuncs = {
+      project: loadProjects,
+      // education: loadEducations,
+      // experience: loadExperiences,
+      // skillLanguage: loadSkillsLanguages,
+      // training: loadTrainings,
+    };
+    refreshFuncForEditTab = refreshFuncs[editTab.name];
   }, [editTab]);
+
+  const handleSetData = (pData) => {
+    const currentData = { ...data };
+    currentData[editTab.name].current = pData;
+    setData(currentData);
+  };
 
   return (
     <React.Fragment>
@@ -62,7 +110,14 @@ function EditProfile(props) {
           ))}
         </div>
       </div>
-      {<editTab.Component />}
+      {
+        <editTab.Component
+          onNext={() => setEditTab(EDIT_TABS[EDIT_TABS.indexOf(editTab) + 1])}
+          refresh={refreshFuncForEditTab}
+          data={data[editTab.name]}
+          setData={handleSetData}
+        />
+      }
     </React.Fragment>
   );
 }

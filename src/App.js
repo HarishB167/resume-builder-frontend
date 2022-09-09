@@ -7,7 +7,7 @@ import ProfileForm from "./components/profileForm";
 import EditProfile from "./components/editProfile";
 import Home from "./components/home";
 import NavBar from "./components/navBar";
-import { getUserList } from "./services/fakeBackend";
+import { getUserList } from "./services/fakeUserService";
 
 function App() {
   const [userList, setUserList] = useState([]);

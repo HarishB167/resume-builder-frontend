@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import Joi from "joi-browser";
 import { toast } from "react-toastify";
-import { getUser, saveUser } from "../services/fakeBackend";
+import { getUser, saveUser } from "../services/fakeUserService";
 
 const schema = {
   id: Joi.optional(),
@@ -51,7 +51,7 @@ function ProfileForm(props) {
 
   const handleSave = async (e) => {
     e.preventDefault();
-    const user = await save();
+    await save();
     props.history.replace("/");
   };
 

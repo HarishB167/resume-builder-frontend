@@ -328,8 +328,16 @@ export async function saveUser(user) {
   }
 }
 
+export async function deleteUser(userId) {
+  const index = userList.indexOf(userList.find((u) => u.id == userId));
+  if (index > -1) {
+    userList.splice(index, 1);
+  }
+}
+
 export default {
   getUserList,
   getUser,
   saveUser,
+  deleteUser,
 };

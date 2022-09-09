@@ -1,12 +1,31 @@
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
+import { deleteUser } from "../services/fakeUserService";
+import Modal from "./modal";
 
 function Home(props) {
+  const [userToDelete, setUserToDelete] = useState("");
   useEffect(() => {
     props.loadUserList();
   }, []);
+
+  const handleDelete = async () => {
+    console.log("Deleting item", userToDelete);
+    if (userToDelete) {
+      deleteUser(userToDelete);
+      setUserToDelete("");
+      props.loadUserList();
+    }
+  };
   return (
     <div className="container container_max-width_500px">
+      <Modal
+        id="modalPopup"
+        title="Delete"
+        body="Are you sure you want to delete this item?"
+        action={handleDelete}
+        actionMessage="Delete"
+      ></Modal>
       <Link
         to="/create-profile"
         className="btn btn-outline-primary btn-sm mt-2 mb-2"
@@ -43,7 +62,14 @@ function Home(props) {
                     >
                       Edit
                     </Link>
-                    <button className="btn btn-danger btn-sm">Delete</button>
+                    <button
+                      className="btn btn-danger btn-sm"
+                      onClick={() => setUserToDelete(user.id)}
+                      data-bs-toggle="modal"
+                      data-bs-target="#modalPopup"
+                    >
+                      Delete
+                    </button>
                   </div>
                 </td>
               </tr>
