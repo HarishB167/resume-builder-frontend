@@ -60,7 +60,7 @@ function EditProfileSkillLanguage(props) {
     } else {
       console.log("result :>> ", result);
       saveLanguage({ ...currentLanguage });
-      toast.success("Skill saved successfully.");
+      toast.success("Language saved successfully.");
 
       const objWithNullValues = { ...currentLanguage };
       Object.keys(objWithNullValues).forEach((k) => {

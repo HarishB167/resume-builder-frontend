@@ -5,6 +5,7 @@ import Modal from "./modal";
 
 function Home(props) {
   const [userToDelete, setUserToDelete] = useState("");
+
   useEffect(() => {
     props.loadUserList();
   }, []);
@@ -26,12 +27,17 @@ function Home(props) {
         action={handleDelete}
         actionMessage="Delete"
       ></Modal>
-      <Link
-        to="/create-profile"
-        className="btn btn-outline-primary btn-sm mt-2 mb-2"
-      >
-        Create Profile
-      </Link>
+      <div className="d-flex justify-content-between align-items-center">
+        <Link
+          to="/create-profile"
+          className="btn btn-outline-primary btn-sm mt-2 mb-2"
+        >
+          Create Profile
+        </Link>
+        <button className="btn btn-primary btn-sm" onClick={props.loadUserList}>
+          Refresh
+        </button>
+      </div>
       <table className="table table-light table-scroll">
         <thead className="thead-scroll">
           <tr className="tr-scroll">
@@ -45,9 +51,12 @@ function Home(props) {
             return (
               <tr key={user.id} className="tr-scroll">
                 <td>
-                  <a href="#" className="text-decoration-none text-primary">
+                  <Link
+                    to={`/view-profile/${user.id}`}
+                    className="text-decoration-none text-primary"
+                  >
                     {`${user.first_name} ${user.last_name}`}
-                  </a>
+                  </Link>
                 </td>
                 <td>
                   {user.profile_statement.length > 30

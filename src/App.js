@@ -3,10 +3,11 @@ import { Route, Switch } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import "./App.css";
-import ProfileForm from "./components/profileForm";
 import EditProfile from "./components/editProfile";
 import Home from "./components/home";
 import NavBar from "./components/navBar";
+import ProfileForm from "./components/profileForm";
+import ProfileView from "./components/profileView";
 import { getUserList } from "./services/fakeUserService";
 
 function App() {
@@ -27,6 +28,7 @@ function App() {
       <NavBar />
       <Switch>
         <Route path="/create-profile" component={ProfileForm} />
+        <Route path="/view-profile/:id" component={ProfileView} />
         <Route path="/:id/edit-profile" component={ProfileForm} />
         <Route path="/:id/edit-profile-details" component={EditProfile} />
         <Route
