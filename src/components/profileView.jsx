@@ -2,6 +2,14 @@ import React, { useEffect, useState } from "react";
 import SpinnerWhileLoading from "./common/spinnerWhileLoading";
 import { getUserProfile } from "../services/fakeUserService";
 
+function formatDateAsMonthDay(dateStr) {
+  var parts = dateStr.split("-");
+  var mydate = new Date(parts[0], parts[1] - 1, parts[2]);
+  const year = mydate.getFullYear();
+  const month = mydate.toLocaleString("default", { month: "long" });
+  return `${month} ${year}`;
+}
+
 function ProfileView(props) {
   const userId = props.match.params.id;
   const [profile, setProfile] = useState({
@@ -128,7 +136,8 @@ function ProfileView(props) {
                     <li key={ex.id} className="list-group-item">
                       <strong>{ex.title}</strong> -<em>{ex.subtitle}</em>
                       <p className="text-secondary">
-                        {ex.start} - {ex.end}
+                        {formatDateAsMonthDay(ex.start)} -{" "}
+                        {formatDateAsMonthDay(ex.end)}
                       </p>
                       <p className="description text-secondary mb-0">
                         {ex.responsibilities}
