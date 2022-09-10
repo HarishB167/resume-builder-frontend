@@ -67,7 +67,7 @@ function EditProfileEducation(props) {
   };
 
   return (
-    <div class="container d-flex flex-column">
+    <div className="container d-flex flex-column">
       <Modal
         id="modalPopup"
         title="Delete"
@@ -75,19 +75,19 @@ function EditProfileEducation(props) {
         action={handleDelete}
         actionMessage="Delete"
       ></Modal>
-      <div id="editpage" class="editpage row align-self-center">
-        <div class="col">
-          <div class="row mb-3 mt-3">
-            <div class="col-4">
-              <label for="qualification" class="form-label">
+      <div id="editpage" className="editpage row align-self-center">
+        <div className="col">
+          <div className="row mb-3 mt-3">
+            <div className="col-4">
+              <label htmlFor="qualification" className="form-label">
                 Qualification
               </label>
             </div>
-            <div class="col">
+            <div className="col">
               <input
                 type="text"
                 id="qualification"
-                class="form-control"
+                className="form-control"
                 value={current.qualification}
                 onChange={(e) =>
                   props.setData({
@@ -98,17 +98,17 @@ function EditProfileEducation(props) {
               />
             </div>
           </div>
-          <div class="row mb-3 mt-3">
-            <div class="col-4">
-              <label for="institute" class="form-label">
+          <div className="row mb-3 mt-3">
+            <div className="col-4">
+              <label htmlFor="institute" className="form-label">
                 Institute
               </label>
             </div>
-            <div class="col">
+            <div className="col">
               <input
                 type="text"
                 id="institute"
-                class="form-control"
+                className="form-control"
                 value={current.institute}
                 onChange={(e) =>
                   props.setData({
@@ -119,17 +119,17 @@ function EditProfileEducation(props) {
               />
             </div>
           </div>
-          <div class="row mb-3 mt-3">
-            <div class="col-4">
-              <label for="score" class="form-label">
+          <div className="row mb-3 mt-3">
+            <div className="col-4">
+              <label htmlFor="score" className="form-label">
                 Score
               </label>
             </div>
-            <div class="col">
+            <div className="col">
               <input
                 type="text"
                 id="score"
-                class="form-control"
+                className="form-control"
                 value={current.score}
                 onChange={(e) =>
                   props.setData({
@@ -143,17 +143,20 @@ function EditProfileEducation(props) {
           <button
             disabled={validate()}
             onClick={handleSave}
-            class="btn btn-primary btn-sm"
+            className="btn btn-primary btn-sm"
           >
             Save
           </button>
-          <button class="btn btn-primary btn-sm ms-3" onClick={props.onNext}>
+          <button
+            className="btn btn-primary btn-sm ms-3"
+            onClick={props.onNext}
+          >
             Next
           </button>
-          <hr class="border border-primary opacity-75" />
+          <hr className="border border-primary opacity-75" />
         </div>
-        <div class="col">
-          <table class="table">
+        <div className="col">
+          <table className="table">
             <thead>
               <tr>
                 <th>Qualification</th>
@@ -163,19 +166,19 @@ function EditProfileEducation(props) {
             </thead>
             <tbody>
               {list.map((item) => (
-                <tr>
+                <tr key={item.id}>
                   <td>{item.qualification}</td>
                   <td>{item.institute}</td>
                   <td>
-                    <div class="d-flex flex-column align-items-center">
+                    <div className="d-flex flex-column align-items-center">
                       <button
-                        class="btn btn-warning btn-sm mb-2"
+                        className="btn btn-warning btn-sm mb-2"
                         onClick={() => handleEdit(item.id)}
                       >
                         Edit
                       </button>
                       <button
-                        class="btn btn-danger btn-sm"
+                        className="btn btn-danger btn-sm"
                         onClick={() => setEducationToDelete(item.id)}
                         data-bs-toggle="modal"
                         data-bs-target="#modalPopup"

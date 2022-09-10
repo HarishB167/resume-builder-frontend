@@ -81,7 +81,7 @@ function EditProfileExperience(props) {
         <div className="col">
           <div className="row mb-3 mt-3">
             <div className="col-4">
-              <label for="title" className="form-label">
+              <label htmlFor="title" className="form-label">
                 Title
               </label>
             </div>
@@ -102,7 +102,7 @@ function EditProfileExperience(props) {
           </div>
           <div className="row mb-3 mt-3">
             <div className="col-4">
-              <label for="subtitle" className="form-label">
+              <label htmlFor="subtitle" className="form-label">
                 Subtitle
               </label>
             </div>
@@ -123,7 +123,7 @@ function EditProfileExperience(props) {
           </div>
           <div className="row mb-3 mt-3">
             <div className="col-4">
-              <label for="start" className="form-label">
+              <label htmlFor="start" className="form-label">
                 Start
               </label>
             </div>
@@ -144,7 +144,7 @@ function EditProfileExperience(props) {
           </div>
           <div className="row mb-3 mt-3">
             <div className="col-4">
-              <label for="end" className="form-label">
+              <label htmlFor="end" className="form-label">
                 End
               </label>
             </div>
@@ -207,19 +207,19 @@ function EditProfileExperience(props) {
             </thead>
             <tbody>
               {list.map((item) => (
-                <tr>
+                <tr key={item.id}>
                   <td>{item.title}</td>
                   <td>{item.subtitle}</td>
                   <td>
-                    <div class="d-flex flex-column align-items-center">
+                    <div className="d-flex flex-column align-items-center">
                       <button
-                        class="btn btn-warning btn-sm mb-2"
+                        className="btn btn-warning btn-sm mb-2"
                         onClick={() => handleEdit(item.id)}
                       >
                         Edit
                       </button>
                       <button
-                        class="btn btn-danger btn-sm"
+                        className="btn btn-danger btn-sm"
                         onClick={() => setExperienceToDelete(item.id)}
                         data-bs-toggle="modal"
                         data-bs-target="#modalPopup"

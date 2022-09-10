@@ -7,6 +7,8 @@ import EditProfileTraining from "./editProfileTraining";
 import { getProjectListForUserId } from "../services/fakeProjectService";
 import { getEducationListForUserId } from "../services/fakeEducationService";
 import { getExperienceListForUserId } from "../services/fakeExperienceService";
+import { getSkillListForUserId } from "../services/fakeSkillLanguageService";
+import { getLanguageListForUserId } from "../services/fakeSkillLanguageService";
 
 const EDIT_TABS = [
   { name: "project", label: "Add/Edit Project", Component: EditProfileProject },
@@ -72,7 +74,8 @@ function EditProfile(props) {
         responsibilities: "",
       },
     },
-    skillLanguage: { list: [], current: {} },
+    skill: { list: [], current: { id: "", user_id: userId, name: "" } },
+    language: { list: [], current: { id: "", user_id: userId, name: "" } },
     training: { list: [], current: {} },
   });
 
@@ -91,16 +94,30 @@ function EditProfile(props) {
     setData({ ...data, experience: { ...data.experience, list: experiences } });
   }
 
+  async function loadSkillsLanguages() {
+    const skills = await getSkillListForUserId(userId);
+    const languages = await getLanguageListForUserId(userId);
+    setData({
+      ...data,
+      skill: { ...data.skill, list: skills },
+      language: { ...data.language, list: languages },
+    });
+  }
+
   useEffect(() => {
     async function loadAllData() {
       const projects = await getProjectListForUserId(userId);
       const educations = await getEducationListForUserId(userId);
       const experiences = await getExperienceListForUserId(userId);
+      const skills = await getSkillListForUserId(userId);
+      const languages = await getLanguageListForUserId(userId);
       setData({
         ...data,
         project: { ...data.project, list: projects },
         education: { ...data.education, list: educations },
         experience: { ...data.experience, list: experiences },
+        skill: { ...data.skill, list: skills },
+        language: { ...data.language, list: languages },
       });
     }
     loadAllData();
@@ -122,11 +139,17 @@ function EditProfile(props) {
     setData(currentData);
   };
 
+  const handleSetDataSkillLanguage = (pData, type) => {
+    const currentData = { ...data };
+    currentData[type].current = pData;
+    setData(currentData);
+  };
+
   const refreshFuncs = {
     project: loadProjects,
     education: loadEducations,
     experience: loadExperiences,
-    // skillLanguage: loadSkillsLanguages,
+    skillLanguage: loadSkillsLanguages,
     // training: loadTrainings,
   };
   let refreshFuncForEditTab = refreshFuncs[editTab.name];
@@ -150,14 +173,22 @@ function EditProfile(props) {
           ))}
         </div>
       </div>
-      {
+      {editTab.name !== "skillLanguage" && (
         <editTab.Component
           onNext={() => setEditTab(EDIT_TABS[EDIT_TABS.indexOf(editTab) + 1])}
           refresh={refreshFuncForEditTab}
           data={data[editTab.name]}
           setData={handleSetData}
         />
-      }
+      )}
+      {editTab.name === "skillLanguage" && (
+        <editTab.Component
+          onNext={() => setEditTab(EDIT_TABS[EDIT_TABS.indexOf(editTab) + 1])}
+          refresh={loadSkillsLanguages}
+          data={{ skill: data.skill, language: data.language }}
+          setData={handleSetDataSkillLanguage}
+        />
+      )}
     </React.Fragment>
   );
 }
