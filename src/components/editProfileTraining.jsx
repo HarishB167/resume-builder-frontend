@@ -7,6 +7,7 @@ import {
   deleteTraining,
 } from "../services/fakeTrainingService";
 import Modal from "./modal";
+import SpinnerWhileLoading from "./common/spinnerWhileLoading";
 
 const schema = {
   id: Joi.optional(),
@@ -19,8 +20,9 @@ const schema = {
 function EditProfileTraining(props) {
   const { list, current } = props.data;
   const [trainingToDelete, setTrainingToDelete] = useState();
+  const [showSpinner, setShowSpinner] = useState(false);
 
-  const handleSave = (e) => {
+  const handleSave = async (e) => {
     e.preventDefault();
     console.log("Saving data", current);
     const result = validate();
@@ -29,8 +31,9 @@ function EditProfileTraining(props) {
       Object.values(result).map((str) => (message += ".\n" + str));
       toast.error(message);
     } else {
+      setShowSpinner(true);
       console.log("result :>> ", result);
-      saveTraining({ ...current });
+      await saveTraining({ ...current });
       toast.success("Training saved successfully.");
 
       const objWithNullValues = { ...current };
@@ -39,17 +42,21 @@ function EditProfileTraining(props) {
       });
       props.setData(objWithNullValues);
       props.refresh();
+      setShowSpinner(false);
     }
   };
 
   const handleEdit = async (trainingId) => {
+    setShowSpinner(true);
     const training = await getTraining(trainingId);
     props.setData({ ...training });
+    setShowSpinner(false);
   };
 
   const handleDelete = async () => {
     if (trainingToDelete) {
       await deleteTraining(trainingToDelete);
+      toast.success("Training deleted successfully.");
       props.refresh();
       setTrainingToDelete(null);
     }
@@ -133,11 +140,15 @@ function EditProfileTraining(props) {
           </div>
           <button
             className="btn btn-primary btn-sm"
-            disabled={validate()}
+            disabled={validate() || showSpinner}
             onClick={handleSave}
           >
             Save
           </button>
+          <SpinnerWhileLoading
+            className="btn"
+            showSpinnerWhen={showSpinner}
+          ></SpinnerWhileLoading>
           <hr className="border border-primary opacity-75" />
         </div>
         <div className="col">

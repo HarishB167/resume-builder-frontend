@@ -2,12 +2,19 @@ import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { deleteUser } from "../services/fakeUserService";
 import Modal from "./modal";
+import SpinnerWhileLoading from "./common/spinnerWhileLoading";
 
 function Home(props) {
   const [userToDelete, setUserToDelete] = useState("");
 
+  const [showSpinner, setShowSpinner] = useState(true);
+
   useEffect(() => {
-    props.loadUserList();
+    async function loadData() {
+      await props.loadUserList();
+      setShowSpinner(false);
+    }
+    loadData();
   }, []);
 
   const handleDelete = async () => {
@@ -38,54 +45,60 @@ function Home(props) {
           Refresh
         </button>
       </div>
-      <table className="table table-light table-scroll">
-        <thead className="thead-scroll">
-          <tr className="tr-scroll">
-            <th scope="col">Name</th>
-            <th scope="col">Profile</th>
-            <th scope="col"></th>
-          </tr>
-        </thead>
-        <tbody className="tbody-scroll">
-          {props.userList.map((user) => {
-            return (
-              <tr key={user.id} className="tr-scroll">
-                <td>
-                  <Link
-                    to={`/view-profile/${user.id}`}
-                    className="text-decoration-none text-primary"
-                  >
-                    {`${user.first_name} ${user.last_name}`}
-                  </Link>
-                </td>
-                <td>
-                  {user.profile_statement.length > 30
-                    ? user.profile_statement.substr(0, 30) + "..."
-                    : user.profile_statement}
-                </td>
-                <td>
-                  <div className="d-flex flex-column align-items-center">
+
+      <SpinnerWhileLoading
+        className="d-flex flex-column align-items-center"
+        showSpinnerWhen={showSpinner && props.userList.length == 0}
+      >
+        <table className="table table-light table-scroll">
+          <thead className="thead-scroll">
+            <tr className="tr-scroll">
+              <th scope="col">Name</th>
+              <th scope="col">Profile</th>
+              <th scope="col"></th>
+            </tr>
+          </thead>
+          <tbody className="tbody-scroll">
+            {props.userList.map((user) => {
+              return (
+                <tr key={user.id} className="tr-scroll">
+                  <td>
                     <Link
-                      to={`${user.id}/edit-profile`}
-                      className="btn btn-warning btn-sm mb-2"
+                      to={`/view-profile/${user.id}`}
+                      className="text-decoration-none text-primary"
                     >
-                      Edit
+                      {`${user.first_name} ${user.last_name}`}
                     </Link>
-                    <button
-                      className="btn btn-danger btn-sm"
-                      onClick={() => setUserToDelete(user.id)}
-                      data-bs-toggle="modal"
-                      data-bs-target="#modalPopup"
-                    >
-                      Delete
-                    </button>
-                  </div>
-                </td>
-              </tr>
-            );
-          })}
-        </tbody>
-      </table>
+                  </td>
+                  <td>
+                    {user.profile_statement.length > 30
+                      ? user.profile_statement.substr(0, 30) + "..."
+                      : user.profile_statement}
+                  </td>
+                  <td>
+                    <div className="d-flex flex-column align-items-center">
+                      <Link
+                        to={`${user.id}/edit-profile`}
+                        className="btn btn-warning btn-sm mb-2"
+                      >
+                        Edit
+                      </Link>
+                      <button
+                        className="btn btn-danger btn-sm"
+                        onClick={() => setUserToDelete(user.id)}
+                        data-bs-toggle="modal"
+                        data-bs-target="#modalPopup"
+                      >
+                        Delete
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              );
+            })}
+          </tbody>
+        </table>
+      </SpinnerWhileLoading>
     </div>
   );
 }

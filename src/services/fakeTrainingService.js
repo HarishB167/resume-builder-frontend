@@ -231,18 +231,33 @@ const trainingList = [
       "Nunc nisl. Duis bibendum, felis sed interdum venenatis, turpis enim blandit mi, in porttitor pede justo eu massa.",
   },
 ];
+const simulateDeplay = true;
+const timeDelay = 2;
+
+async function sleep(sec) {
+  await sleep(timeDelay);
+  if (simulateDeplay) await new Promise((r) => setTimeout(r, sec * 1000));
+}
 
 export async function getTrainingListForUserId(userId) {
+  // await sleep(timeDelay);
+  await new Promise((r) => setTimeout(r, 2000));
+
   const list = trainingList.filter((item) => item.user_id == userId);
   return [...list];
 }
 
 export async function getTraining(trainingId) {
+  // await sleep(timeDelay);
+  await new Promise((r) => setTimeout(r, 2000));
+
   const training = trainingList.find((t) => t.id == trainingId);
   if (training) return { ...training };
 }
 
 export async function saveTraining(training) {
+  // await sleep(timeDelay);
+  await new Promise((r) => setTimeout(r, 2000));
   if (training.id) {
     const t = trainingList.find((item) => item.id === training.id);
     t.title = training.title;
@@ -258,6 +273,7 @@ export async function saveTraining(training) {
 }
 
 export async function deleteTraining(trainingId) {
+  await new Promise((r) => setTimeout(r, 2000));
   const index = trainingList.indexOf(
     trainingList.find((t) => t.id == trainingId)
   );

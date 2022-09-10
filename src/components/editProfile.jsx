@@ -4,12 +4,14 @@ import EditProfileExperience from "./editProfileExperience";
 import EditProfileProject from "./editProfileProject";
 import EditProfileSkillLanguage from "./editProfileSkillLanguage";
 import EditProfileTraining from "./editProfileTraining";
+import SpinnerWhileLoading from "./common/spinnerWhileLoading";
 import { getProjectListForUserId } from "../services/fakeProjectService";
 import { getEducationListForUserId } from "../services/fakeEducationService";
 import { getExperienceListForUserId } from "../services/fakeExperienceService";
 import { getSkillListForUserId } from "../services/fakeSkillLanguageService";
 import { getLanguageListForUserId } from "../services/fakeSkillLanguageService";
 import { getTrainingListForUserId } from "../services/fakeTrainingService";
+import { getUserProfile } from "../services/fakeUserService";
 
 const EDIT_TABS = [
   { name: "project", label: "Add/Edit Project", Component: EditProfileProject },
@@ -39,6 +41,7 @@ function EditProfile(props) {
   const userId = props.match.params.id;
 
   const [editTab, setEditTab] = useState(EDIT_TABS[0]);
+  const [showSpinner, setShowSpinner] = useState(true);
 
   const [data, setData] = useState({
     project: {
@@ -94,6 +97,61 @@ function EditProfile(props) {
     setData({ ...data, project: { ...data.project, list: projects } });
   }
 
+  function clearCurrentFields() {
+    setData({
+      ...data,
+      project: {
+        ...data.project,
+        current: {
+          id: "",
+          user_id: userId,
+          title: "",
+          subtitle: "",
+          description: "",
+          git_link: "",
+          test_link: "",
+        },
+      },
+      education: {
+        ...data.education,
+        current: {
+          id: "",
+          user_id: userId,
+          qualification: "",
+          institute: "",
+          score: "",
+        },
+      },
+      experience: {
+        ...data.experience,
+        current: {
+          id: "",
+          user_id: userId,
+          title: "",
+          subtitle: "",
+          start: "",
+          end: "",
+          responsibilities: "",
+        },
+      },
+      skill: { ...data.skill, current: { id: "", user_id: userId, name: "" } },
+      language: {
+        ...data.language,
+        current: { id: "", user_id: userId, name: "" },
+      },
+      training: {
+        ...data.training,
+        current: {
+          id: "",
+          user_id: userId,
+          title: "",
+          subtitle: "",
+          description: "",
+        },
+      },
+    });
+  }
+
   async function loadEducations() {
     const educations = await getEducationListForUserId(userId);
     setData({ ...data, education: { ...data.education, list: educations } });
@@ -116,27 +174,23 @@ function EditProfile(props) {
 
   async function loadTrainings() {
     const trainings = await getTrainingListForUserId(userId);
-    console.log("Refreshing  trainings", trainings);
     setData({ ...data, training: { ...data.training, list: trainings } });
   }
 
   useEffect(() => {
     async function loadAllData() {
-      const projects = await getProjectListForUserId(userId);
-      const educations = await getEducationListForUserId(userId);
-      const experiences = await getExperienceListForUserId(userId);
-      const skills = await getSkillListForUserId(userId);
-      const languages = await getLanguageListForUserId(userId);
-      const trainings = await getTrainingListForUserId(userId);
+      setShowSpinner(true);
+      const profile = await getUserProfile(userId);
       setData({
         ...data,
-        project: { ...data.project, list: projects },
-        education: { ...data.education, list: educations },
-        experience: { ...data.experience, list: experiences },
-        skill: { ...data.skill, list: skills },
-        language: { ...data.language, list: languages },
-        training: { ...data.training, list: trainings },
+        project: { ...data.project, list: profile.projects },
+        education: { ...data.education, list: profile.educations },
+        experience: { ...data.experience, list: profile.experiences },
+        skill: { ...data.skill, list: profile.skills },
+        language: { ...data.language, list: profile.languages },
+        training: { ...data.training, list: profile.trainings },
       });
+      setShowSpinner(false);
     }
     loadAllData();
   }, []);
@@ -172,43 +226,49 @@ function EditProfile(props) {
   };
   let refreshFuncForEditTab = refreshFuncs[editTab.name];
   return (
-    <React.Fragment>
-      <div className="d-flex justify-content-center w-100">
-        <div className="pad">
-          {EDIT_TABS.map((item) => (
-            <span
-              key={item.name}
-              className={
-                "pad__select c-pointer" +
-                (item.name === editTab.name ? " pad__select_selected" : "")
-              }
-              ref={item.name === editTab.name ? padSelectedRef : null}
-              onClick={() => {
-                setEditTab(item);
-              }}
-            >
-              {item.label}
-            </span>
-          ))}
+    <SpinnerWhileLoading
+      className="d-flex flex-column align-items-center h-75 justify-content-center"
+      showSpinnerWhen={showSpinner}
+    >
+      <React.Fragment>
+        <div className="d-flex justify-content-center w-100">
+          <div className="pad">
+            {EDIT_TABS.map((item) => (
+              <span
+                key={item.name}
+                className={
+                  "pad__select c-pointer" +
+                  (item.name === editTab.name ? " pad__select_selected" : "")
+                }
+                ref={item.name === editTab.name ? padSelectedRef : null}
+                onClick={() => {
+                  setEditTab(item);
+                  clearCurrentFields();
+                }}
+              >
+                {item.label}
+              </span>
+            ))}
+          </div>
         </div>
-      </div>
-      {editTab.name !== "skillLanguage" && (
-        <editTab.Component
-          onNext={() => setEditTab(EDIT_TABS[EDIT_TABS.indexOf(editTab) + 1])}
-          refresh={refreshFuncForEditTab}
-          data={data[editTab.name]}
-          setData={handleSetData}
-        />
-      )}
-      {editTab.name === "skillLanguage" && (
-        <editTab.Component
-          onNext={() => setEditTab(EDIT_TABS[EDIT_TABS.indexOf(editTab) + 1])}
-          refresh={loadSkillsLanguages}
-          data={{ skill: data.skill, language: data.language }}
-          setData={handleSetDataSkillLanguage}
-        />
-      )}
-    </React.Fragment>
+        {editTab.name !== "skillLanguage" && (
+          <editTab.Component
+            onNext={() => setEditTab(EDIT_TABS[EDIT_TABS.indexOf(editTab) + 1])}
+            refresh={refreshFuncForEditTab}
+            data={data[editTab.name]}
+            setData={handleSetData}
+          />
+        )}
+        {editTab.name === "skillLanguage" && (
+          <editTab.Component
+            onNext={() => setEditTab(EDIT_TABS[EDIT_TABS.indexOf(editTab) + 1])}
+            refresh={loadSkillsLanguages}
+            data={{ skill: data.skill, language: data.language }}
+            setData={handleSetDataSkillLanguage}
+          />
+        )}
+      </React.Fragment>
+    </SpinnerWhileLoading>
   );
 }
 

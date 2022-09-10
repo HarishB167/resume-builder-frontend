@@ -450,18 +450,27 @@ const experienceList = [
     responsibilities: "Cross-platform system-worthy structure",
   },
 ];
+const simulateDeplay = true;
+const timeDelay = 2;
+
+async function sleep(sec) {
+  if (simulateDeplay) await new Promise((r) => setTimeout(r, sec * 1000));
+}
 
 export async function getExperienceListForUserId(userId) {
+  await sleep(timeDelay);
   const list = experienceList.filter((item) => item.user_id == userId);
   return [...list];
 }
 
 export async function getExperience(experienceId) {
+  await sleep(timeDelay);
   const experience = experienceList.find((e) => e.id == experienceId);
   if (experience) return { ...experience };
 }
 
 export async function saveExperience(experience) {
+  await sleep(timeDelay);
   if (experience.id) {
     const e = experienceList.find((item) => item.id === experience.id);
     e.title = experience.title;
@@ -479,6 +488,7 @@ export async function saveExperience(experience) {
 }
 
 export async function deleteExperience(experienceId) {
+  await sleep(timeDelay);
   const index = experienceList.indexOf(
     experienceList.find((e) => e.id == experienceId)
   );

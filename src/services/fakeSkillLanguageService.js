@@ -503,28 +503,39 @@ const languageList = [
     name: "Arabic",
   },
 ];
+const simulateDeplay = true;
+const timeDelay = 2;
+
+async function sleep(sec) {
+  if (simulateDeplay) await new Promise((r) => setTimeout(r, sec * 1000));
+}
 
 export async function getSkillListForUserId(userId) {
+  await sleep(timeDelay);
   const list = skillList.filter((item) => item.user_id == userId);
   return [...list];
 }
 
 export async function getLanguageListForUserId(userId) {
+  await sleep(timeDelay);
   const list = languageList.filter((item) => item.user_id == userId);
   return [...list];
 }
 
 export async function getSkill(skillId) {
+  await sleep(timeDelay);
   const skill = skillList.find((e) => e.id == skillId);
   if (skill) return { ...skill };
 }
 
 export async function getLanguage(languageId) {
+  await sleep(timeDelay);
   const language = languageList.find((e) => e.id == languageId);
   if (language) return { ...language };
 }
 
 export async function saveSkill(skill) {
+  await sleep(timeDelay);
   if (skill.id) {
     const s = skillList.find((item) => item.id === skill.id);
     s.name = skill.name;
@@ -538,6 +549,7 @@ export async function saveSkill(skill) {
 }
 
 export async function saveLanguage(language) {
+  await sleep(timeDelay);
   if (language.id) {
     const l = languageList.find((item) => item.id === language.id);
     l.name = language.name;
@@ -551,6 +563,7 @@ export async function saveLanguage(language) {
 }
 
 export async function deleteSkill(skillId) {
+  await sleep(timeDelay);
   const index = skillList.indexOf(skillList.find((e) => e.id == skillId));
   if (index > -1) {
     skillList.splice(index, 1);
@@ -558,6 +571,7 @@ export async function deleteSkill(skillId) {
 }
 
 export async function deleteLanguage(languageId) {
+  await sleep(timeDelay);
   const index = languageList.indexOf(
     languageList.find((e) => e.id == languageId)
   );

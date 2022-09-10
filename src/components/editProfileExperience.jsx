@@ -7,6 +7,7 @@ import {
   deleteExperience,
 } from "../services/fakeExperienceService";
 import Modal from "./modal";
+import SpinnerWhileLoading from "./common/spinnerWhileLoading";
 
 const schema = {
   id: Joi.optional(),
@@ -21,8 +22,9 @@ const schema = {
 function EditProfileExperience(props) {
   const { list, current } = props.data;
   const [experienceToDelete, setExperienceToDelete] = useState();
+  const [showSpinner, setShowSpinner] = useState(false);
 
-  const handleSave = (e) => {
+  const handleSave = async (e) => {
     e.preventDefault();
     console.log("Saving data", current);
     const result = validate();
@@ -31,8 +33,9 @@ function EditProfileExperience(props) {
       Object.values(result).map((str) => (message += ".\n" + str));
       toast.error(message);
     } else {
+      setShowSpinner(true);
       console.log("result :>> ", result);
-      saveExperience({ ...current });
+      await saveExperience({ ...current });
       toast.success("Experience saved successfully.");
 
       const objWithNullValues = { ...current };
@@ -41,12 +44,15 @@ function EditProfileExperience(props) {
       });
       props.setData(objWithNullValues);
       props.refresh();
+      setShowSpinner(false);
     }
   };
 
   const handleEdit = async (experienceId) => {
+    setShowSpinner(true);
     const experience = await getExperience(experienceId);
     props.setData({ ...experience });
+    setShowSpinner(false);
   };
 
   const handleDelete = async () => {
@@ -182,7 +188,7 @@ function EditProfileExperience(props) {
             </div>
           </div>
           <button
-            disabled={validate()}
+            disabled={validate() || showSpinner}
             onClick={handleSave}
             className="btn btn-primary btn-sm"
           >
@@ -194,6 +200,10 @@ function EditProfileExperience(props) {
           >
             Next
           </button>
+          <SpinnerWhileLoading
+            className="btn"
+            showSpinnerWhen={showSpinner}
+          ></SpinnerWhileLoading>
           <hr className="border border-primary opacity-75" />
         </div>
         <div className="col">

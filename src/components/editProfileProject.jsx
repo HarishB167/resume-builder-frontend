@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Joi from "joi-browser";
 import { toast } from "react-toastify";
 import {
@@ -7,6 +7,7 @@ import {
   deleteProject,
 } from "../services/fakeProjectService";
 import Modal from "./modal";
+import SpinnerWhileLoading from "./common/spinnerWhileLoading";
 
 const schema = {
   id: Joi.optional(),
@@ -21,8 +22,21 @@ const schema = {
 function EditProfileProject(props) {
   const { list, current } = props.data;
   const [projectToDelete, setProjectToDelete] = useState();
+  const [showSpinner, setShowSpinner] = useState(false);
 
-  const handleSave = (e) => {
+  const clearForm = () => {
+    props.setData({
+      id: "",
+      user_id: current.user_id,
+      title: "",
+      subtitle: "",
+      description: "",
+      git_link: "",
+      test_link: "",
+    });
+  };
+
+  const handleSave = async (e) => {
     e.preventDefault();
     console.log("Saving data", current);
     const result = validate();
@@ -31,28 +45,29 @@ function EditProfileProject(props) {
       Object.values(result).map((str) => (message += ".\n" + str));
       toast.error(message);
     } else {
+      setShowSpinner(true);
       console.log("result :>> ", result);
-      saveProject({ ...current });
+      await saveProject({ ...current });
       toast.success("Project saved successfully.");
 
-      const objWithNullValues = { ...current };
-      Object.keys(objWithNullValues).forEach((k) => {
-        if (k !== "user_id") objWithNullValues[k] = "";
-      });
-      props.setData(objWithNullValues);
+      clearForm();
       props.refresh();
+      setShowSpinner(false);
     }
   };
 
   const handleEdit = async (projectId) => {
+    setShowSpinner(true);
     const project = await getProject(projectId);
     props.setData({ ...project });
+    setShowSpinner(false);
   };
 
   const handleDelete = async () => {
     if (projectToDelete) {
       await deleteProject(projectToDelete);
       props.refresh();
+      toast.success("Deleted successfully");
       setProjectToDelete(null);
     }
   };
@@ -176,7 +191,7 @@ function EditProfileProject(props) {
           </div>
 
           <button
-            disabled={validate()}
+            disabled={validate() || showSpinner}
             className="btn btn-primary btn-sm"
             onClick={handleSave}
           >
@@ -188,6 +203,10 @@ function EditProfileProject(props) {
           >
             Next
           </button>
+          <SpinnerWhileLoading
+            className="btn"
+            showSpinnerWhen={showSpinner}
+          ></SpinnerWhileLoading>
           <hr className="border border-primary opacity-75" />
         </div>
         <div className="col">

@@ -7,6 +7,7 @@ import {
   deleteEducation,
 } from "../services/fakeEducationService";
 import Modal from "./modal";
+import SpinnerWhileLoading from "./common/spinnerWhileLoading";
 
 const schema = {
   id: Joi.optional(),
@@ -19,8 +20,9 @@ const schema = {
 function EditProfileEducation(props) {
   const { list, current } = props.data;
   const [educationToDelete, setEducationToDelete] = useState();
+  const [showSpinner, setShowSpinner] = useState(false);
 
-  const handleSave = (e) => {
+  const handleSave = async (e) => {
     e.preventDefault();
     console.log("Saving data", current);
     const result = validate();
@@ -29,8 +31,9 @@ function EditProfileEducation(props) {
       Object.values(result).map((str) => (message += ".\n" + str));
       toast.error(message);
     } else {
+      setShowSpinner(true);
       console.log("result :>> ", result);
-      saveEducation({ ...current });
+      await saveEducation({ ...current });
       toast.success("Education saved successfully.");
 
       const objWithNullValues = { ...current };
@@ -39,12 +42,15 @@ function EditProfileEducation(props) {
       });
       props.setData(objWithNullValues);
       props.refresh();
+      setShowSpinner(false);
     }
   };
 
   const handleEdit = async (educationId) => {
+    setShowSpinner(true);
     const education = await getEducation(educationId);
     props.setData({ ...education });
+    setShowSpinner(false);
   };
 
   const handleDelete = async () => {
@@ -141,7 +147,7 @@ function EditProfileEducation(props) {
             </div>
           </div>
           <button
-            disabled={validate()}
+            disabled={validate() || showSpinner}
             onClick={handleSave}
             className="btn btn-primary btn-sm"
           >
@@ -153,6 +159,10 @@ function EditProfileEducation(props) {
           >
             Next
           </button>
+          <SpinnerWhileLoading
+            className="btn"
+            showSpinnerWhen={showSpinner}
+          ></SpinnerWhileLoading>
           <hr className="border border-primary opacity-75" />
         </div>
         <div className="col">

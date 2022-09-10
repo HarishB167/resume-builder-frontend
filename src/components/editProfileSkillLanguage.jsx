@@ -10,6 +10,7 @@ import {
   deleteLanguage,
 } from "../services/fakeSkillLanguageService";
 import Modal from "./modal";
+import SpinnerWhileLoading from "./common/spinnerWhileLoading";
 
 const schemaSkill = {
   id: Joi.optional(),
@@ -28,8 +29,9 @@ function EditProfileSkillLanguage(props) {
   const { list: listLanguage, current: currentLanguage } = props.data.language;
   const [skillToDelete, setSkillToDelete] = useState();
   const [languageToDelete, setLanguageToDelete] = useState();
+  const [showSpinner, setShowSpinner] = useState(false);
 
-  const handleSaveSkill = (e) => {
+  const handleSaveSkill = async (e) => {
     e.preventDefault();
     const result = validateSkill();
     if (result) {
@@ -37,8 +39,9 @@ function EditProfileSkillLanguage(props) {
       Object.values(result).map((str) => (message += ".\n" + str));
       toast.error(message);
     } else {
+      setShowSpinner(true);
       console.log("result :>> ", result);
-      saveSkill({ ...currentSkill });
+      await saveSkill({ ...currentSkill });
       toast.success("Skill saved successfully.");
 
       const objWithNullValues = { ...currentSkill };
@@ -47,10 +50,11 @@ function EditProfileSkillLanguage(props) {
       });
       props.setData(objWithNullValues, "skill");
       props.refresh();
+      setShowSpinner(false);
     }
   };
 
-  const handleSaveLanguage = (e) => {
+  const handleSaveLanguage = async (e) => {
     e.preventDefault();
     const result = validateLanguage();
     if (result) {
@@ -58,8 +62,9 @@ function EditProfileSkillLanguage(props) {
       Object.values(result).map((str) => (message += ".\n" + str));
       toast.error(message);
     } else {
+      setShowSpinner(true);
       console.log("result :>> ", result);
-      saveLanguage({ ...currentLanguage });
+      await saveLanguage({ ...currentLanguage });
       toast.success("Language saved successfully.");
 
       const objWithNullValues = { ...currentLanguage };
@@ -68,17 +73,22 @@ function EditProfileSkillLanguage(props) {
       });
       props.setData(objWithNullValues, "language");
       props.refresh();
+      setShowSpinner(false);
     }
   };
 
   const handleEditSkill = async (skillId) => {
+    setShowSpinner(true);
     const skill = await getSkill(skillId);
     props.setData({ ...skill }, "skill");
+    setShowSpinner(false);
   };
 
   const handleEditLanguage = async (languageId) => {
+    setShowSpinner(true);
     const language = await getLanguage(languageId);
     props.setData({ ...language }, "language");
+    setShowSpinner(false);
   };
 
   const handleDeleteSkill = async () => {
@@ -162,7 +172,7 @@ function EditProfileSkillLanguage(props) {
             </div>
             <div className="col-3">
               <button
-                disabled={validateSkill()}
+                disabled={validateSkill() || showSpinner}
                 onClick={handleSaveSkill}
                 className="btn btn-primary btn-sm"
               >
@@ -195,7 +205,7 @@ function EditProfileSkillLanguage(props) {
             </div>
             <div className="col-3">
               <button
-                disabled={validateLanguage()}
+                disabled={validateLanguage() || showSpinner}
                 onClick={handleSaveLanguage}
                 className="btn btn-primary btn-sm"
               >
@@ -206,6 +216,10 @@ function EditProfileSkillLanguage(props) {
           <button className="btn btn-primary btn-sm" onClick={props.onNext}>
             Next
           </button>
+          <SpinnerWhileLoading
+            className="btn"
+            showSpinnerWhen={showSpinner}
+          ></SpinnerWhileLoading>
           <hr className="border border-primary opacity-75" />
         </div>
         <div className="col row">

@@ -1,3 +1,10 @@
+import { getProjectListForUserId } from "./fakeProjectService";
+import { getEducationListForUserId } from "./fakeEducationService";
+import { getExperienceListForUserId } from "./fakeExperienceService";
+import { getSkillListForUserId } from "./fakeSkillLanguageService";
+import { getLanguageListForUserId } from "./fakeSkillLanguageService";
+import { getTrainingListForUserId } from "./fakeTrainingService";
+
 const userList = [
   {
     id: 1,
@@ -300,16 +307,46 @@ const userList = [
   },
 ];
 
+const simulateDeplay = true;
+const timeDelay = 2;
+
+async function sleep(sec) {
+  if (simulateDeplay) await new Promise((r) => setTimeout(r, sec * 1000));
+}
+
 export async function getUserList() {
+  await sleep(timeDelay);
   return [...userList];
 }
 
 export async function getUser(userId) {
   const user = userList.find((u) => u.id == userId);
+  await sleep(timeDelay);
   if (user) return { ...user };
 }
 
+export async function getUserProfile(userId) {
+  await sleep(timeDelay);
+  const user = await getUser(userId);
+  const projects = await getProjectListForUserId(userId);
+  const educations = await getEducationListForUserId(userId);
+  const experiences = await getExperienceListForUserId(userId);
+  const skills = await getSkillListForUserId(userId);
+  const languages = await getLanguageListForUserId(userId);
+  const trainings = await getTrainingListForUserId(userId);
+  return {
+    basicInfo: user,
+    projects: projects,
+    educations: educations,
+    experiences: experiences,
+    skills: skills,
+    languages: languages,
+    trainings: trainings,
+  };
+}
+
 export async function saveUser(user) {
+  await sleep(timeDelay);
   if (user.id) {
     const u = userList.find((item) => item.id === user.id);
     u.first_name = user.first_name;
@@ -330,6 +367,7 @@ export async function saveUser(user) {
 
 export async function deleteUser(userId) {
   const index = userList.indexOf(userList.find((u) => u.id == userId));
+  await sleep(timeDelay);
   if (index > -1) {
     userList.splice(index, 1);
   }

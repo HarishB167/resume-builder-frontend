@@ -299,18 +299,27 @@ const projectList = [
     test_link: "http://prweb.com/aliquam/quis/turpis.json",
   },
 ];
+const simulateDeplay = true;
+const timeDelay = 2;
+
+async function sleep(sec) {
+  if (simulateDeplay) await new Promise((r) => setTimeout(r, sec * 1000));
+}
 
 export async function getProjectListForUserId(userId) {
   const list = projectList.filter((item) => item.user_id == userId);
+  // await sleep(timeDelay);
   return [...list];
 }
 
 export async function getProject(projectId) {
   const project = projectList.find((p) => p.id == projectId);
+  // await sleep(timeDelay);
   if (project) return { ...project };
 }
 
 export async function saveProject(project) {
+  await sleep(timeDelay);
   if (project.id) {
     const p = projectList.find((item) => item.id === project.id);
     p.title = project.title;
@@ -328,6 +337,7 @@ export async function saveProject(project) {
 }
 
 export async function deleteProject(projectId) {
+  await sleep(timeDelay);
   const index = projectList.indexOf(projectList.find((p) => p.id == projectId));
   if (index > -1) {
     projectList.splice(index, 1);

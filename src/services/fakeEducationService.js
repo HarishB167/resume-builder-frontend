@@ -210,6 +210,12 @@ const educationList = [
     score: 90.19,
   },
 ];
+const simulateDeplay = true;
+const timeDelay = 2;
+
+async function sleep(sec) {
+  if (simulateDeplay) await new Promise((r) => setTimeout(r, sec * 1000));
+}
 
 export async function getEducationListForUserId(userId) {
   const list = educationList.filter((item) => item.user_id == userId);
@@ -222,6 +228,7 @@ export async function getEducation(educationId) {
 }
 
 export async function saveEducation(education) {
+  await sleep(timeDelay);
   if (education.id) {
     const e = educationList.find((item) => item.id === education.id);
     e.qualification = education.qualification;
@@ -237,6 +244,7 @@ export async function saveEducation(education) {
 }
 
 export async function deleteEducation(educationId) {
+  await sleep(timeDelay);
   const index = educationList.indexOf(
     educationList.find((e) => e.id == educationId)
   );
