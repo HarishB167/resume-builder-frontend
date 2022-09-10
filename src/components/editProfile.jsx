@@ -9,6 +9,7 @@ import { getEducationListForUserId } from "../services/fakeEducationService";
 import { getExperienceListForUserId } from "../services/fakeExperienceService";
 import { getSkillListForUserId } from "../services/fakeSkillLanguageService";
 import { getLanguageListForUserId } from "../services/fakeSkillLanguageService";
+import { getTrainingListForUserId } from "../services/fakeTrainingService";
 
 const EDIT_TABS = [
   { name: "project", label: "Add/Edit Project", Component: EditProfileProject },
@@ -76,7 +77,16 @@ function EditProfile(props) {
     },
     skill: { list: [], current: { id: "", user_id: userId, name: "" } },
     language: { list: [], current: { id: "", user_id: userId, name: "" } },
-    training: { list: [], current: {} },
+    training: {
+      list: [],
+      current: {
+        id: "",
+        user_id: userId,
+        title: "",
+        subtitle: "",
+        description: "",
+      },
+    },
   });
 
   async function loadProjects() {
@@ -104,6 +114,12 @@ function EditProfile(props) {
     });
   }
 
+  async function loadTrainings() {
+    const trainings = await getTrainingListForUserId(userId);
+    console.log("Refreshing  trainings", trainings);
+    setData({ ...data, training: { ...data.training, list: trainings } });
+  }
+
   useEffect(() => {
     async function loadAllData() {
       const projects = await getProjectListForUserId(userId);
@@ -111,6 +127,7 @@ function EditProfile(props) {
       const experiences = await getExperienceListForUserId(userId);
       const skills = await getSkillListForUserId(userId);
       const languages = await getLanguageListForUserId(userId);
+      const trainings = await getTrainingListForUserId(userId);
       setData({
         ...data,
         project: { ...data.project, list: projects },
@@ -118,6 +135,7 @@ function EditProfile(props) {
         experience: { ...data.experience, list: experiences },
         skill: { ...data.skill, list: skills },
         language: { ...data.language, list: languages },
+        training: { ...data.training, list: trainings },
       });
     }
     loadAllData();
@@ -150,7 +168,7 @@ function EditProfile(props) {
     education: loadEducations,
     experience: loadExperiences,
     skillLanguage: loadSkillsLanguages,
-    // training: loadTrainings,
+    training: loadTrainings,
   };
   let refreshFuncForEditTab = refreshFuncs[editTab.name];
   return (
@@ -159,6 +177,7 @@ function EditProfile(props) {
         <div className="pad">
           {EDIT_TABS.map((item) => (
             <span
+              key={item.name}
               className={
                 "pad__select c-pointer" +
                 (item.name === editTab.name ? " pad__select_selected" : "")

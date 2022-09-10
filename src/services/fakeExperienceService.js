@@ -472,7 +472,7 @@ export async function saveExperience(experience) {
     return e;
   } else {
     const newExperience = { ...experience };
-    newExperience.id = experienceList.length + 1;
+    newExperience.id = new Date().getTime();
     experienceList.push(newExperience);
     return newExperience;
   }

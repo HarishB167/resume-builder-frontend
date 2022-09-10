@@ -322,7 +322,7 @@ export async function saveUser(user) {
     return u;
   } else {
     const newUser = { ...user };
-    newUser.id = userList.length + 1;
+    newUser.id = new Date().getTime();
     userList.push(newUser);
     return newUser;
   }

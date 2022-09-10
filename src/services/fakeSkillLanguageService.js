@@ -531,7 +531,7 @@ export async function saveSkill(skill) {
     return s;
   } else {
     const newSkill = { ...skill };
-    newSkill.id = skillList.length + 1;
+    newSkill.id = new Date().getTime();
     skillList.push(newSkill);
     return newSkill;
   }
@@ -544,7 +544,7 @@ export async function saveLanguage(language) {
     return l;
   } else {
     const newLanguage = { ...language };
-    newLanguage.id = languageList.length + 1;
+    newLanguage.id = new Date().getTime();
     languageList.push(newLanguage);
     return newLanguage;
   }

@@ -321,7 +321,7 @@ export async function saveProject(project) {
     return p;
   } else {
     const newProject = { ...project };
-    newProject.id = projectList.length + 1;
+    newProject.id = new Date().getTime();
     projectList.push(newProject);
     return newProject;
   }

@@ -230,7 +230,7 @@ export async function saveEducation(education) {
     return e;
   } else {
     const newEducation = { ...education };
-    newEducation.id = educationList.length + 1;
+    newEducation.id = new Date().getTime();
     educationList.push(newEducation);
     return newEducation;
   }

@@ -1,28 +1,116 @@
-import React from "react";
+import React, { useState } from "react";
+import Joi from "joi-browser";
+import { toast } from "react-toastify";
+import {
+  getTraining,
+  saveTraining,
+  deleteTraining,
+} from "../services/fakeTrainingService";
+import Modal from "./modal";
+
+const schema = {
+  id: Joi.optional(),
+  user_id: Joi.required(),
+  title: Joi.string().required().label("Title"),
+  subtitle: Joi.string().required().label("Subtitle"),
+  description: Joi.string().required().label("Description"),
+};
 
 function EditProfileTraining(props) {
+  const { list, current } = props.data;
+  const [trainingToDelete, setTrainingToDelete] = useState();
+
+  const handleSave = (e) => {
+    e.preventDefault();
+    console.log("Saving data", current);
+    const result = validate();
+    if (result) {
+      let message = "";
+      Object.values(result).map((str) => (message += ".\n" + str));
+      toast.error(message);
+    } else {
+      console.log("result :>> ", result);
+      saveTraining({ ...current });
+      toast.success("Training saved successfully.");
+
+      const objWithNullValues = { ...current };
+      Object.keys(objWithNullValues).forEach((k) => {
+        if (k !== "user_id") objWithNullValues[k] = "";
+      });
+      props.setData(objWithNullValues);
+      props.refresh();
+    }
+  };
+
+  const handleEdit = async (trainingId) => {
+    const training = await getTraining(trainingId);
+    props.setData({ ...training });
+  };
+
+  const handleDelete = async () => {
+    if (trainingToDelete) {
+      await deleteTraining(trainingToDelete);
+      props.refresh();
+      setTrainingToDelete(null);
+    }
+  };
+
+  const validate = () => {
+    const result = Joi.validate(current, schema, {
+      abortEarly: false,
+    });
+    if (!result.error) return null;
+
+    const errors = {};
+    for (let item of result.error.details) errors[item.path[0]] = item.message;
+    return errors;
+  };
+
   return (
     <div className="container d-flex flex-column">
+      <Modal
+        id="modalPopup"
+        title="Delete"
+        body="Are you sure you want to delete this item?"
+        action={handleDelete}
+        actionMessage="Delete"
+      ></Modal>
       <div id="editpage" className="editpage row align-self-center">
         <div className="col">
           <div className="row mb-3 mt-3">
             <div className="col-4">
-              <label for="title" className="form-label">
+              <label htmlFor="title" className="form-label">
                 Title
               </label>
             </div>
             <div className="col">
-              <input type="text" id="title" className="form-control" />
+              <input
+                type="text"
+                id="title"
+                className="form-control"
+                value={current.title}
+                onChange={(e) =>
+                  props.setData({ ...current, title: e.currentTarget.value })
+                }
+              />
             </div>
           </div>
           <div className="row mb-3 mt-3">
             <div className="col-4">
-              <label for="subtitle" className="form-label">
+              <label htmlFor="subtitle" className="form-label">
                 Subtitle
               </label>
             </div>
             <div className="col">
-              <input type="text" id="subtitle" className="form-control" />
+              <input
+                type="text"
+                id="subtitle"
+                className="form-control"
+                value={current.subtitle}
+                onChange={(e) =>
+                  props.setData({ ...current, subtitle: e.currentTarget.value })
+                }
+              />
             </div>
           </div>
           <div className="row mb-3">
@@ -33,11 +121,23 @@ function EditProfileTraining(props) {
               <textarea
                 className="form-control"
                 aria-label="Description"
+                value={current.description}
+                onChange={(e) =>
+                  props.setData({
+                    ...current,
+                    description: e.currentTarget.value,
+                  })
+                }
               ></textarea>
             </div>
           </div>
-          <button className="btn btn-primary btn-sm">Add</button>
-          <button className="btn btn-primary btn-sm ms-3">Next</button>
+          <button
+            className="btn btn-primary btn-sm"
+            disabled={validate()}
+            onClick={handleSave}
+          >
+            Save
+          </button>
           <hr className="border border-primary opacity-75" />
         </div>
         <div className="col">
@@ -50,114 +150,30 @@ function EditProfileTraining(props) {
               </tr>
             </thead>
             <tbody>
-              <tr>
-                <td>MasHelper</td>
-                <td>Material at site helper</td>
-                <td>
-                  <div className="d-flex flex-column align-items-center">
-                    <button className="btn btn-warning btn-sm mb-2">
-                      Edit
-                    </button>
-                    <button className="btn btn-danger btn-sm">Delete</button>
-                  </div>
-                </td>
-              </tr>
-              <tr>
-                <td>Mindmap</td>
-                <td>A Mindmap app</td>
-                <td>
-                  <div className="d-flex flex-column align-items-center">
-                    <button className="btn btn-warning btn-sm mb-2">
-                      Edit
-                    </button>
-                    <button className="btn btn-danger btn-sm">Delete</button>
-                  </div>
-                </td>
-              </tr>
-              <tr>
-                <td>Resume Builder</td>
-                <td>Building resume form profiles</td>
-                <td>
-                  <div className="d-flex flex-column align-items-center">
-                    <button className="btn btn-warning btn-sm mb-2">
-                      Edit
-                    </button>
-                    <button className="btn btn-danger btn-sm">Delete</button>
-                  </div>
-                </td>
-              </tr>
-              <tr>
-                <td>Lorem, ipsum.</td>
-                <td>Lorem, ipsum dolor.</td>
-                <td>
-                  <div className="d-flex flex-column align-items-center">
-                    <button className="btn btn-warning btn-sm mb-2">
-                      Edit
-                    </button>
-                    <button className="btn btn-danger btn-sm">Delete</button>
-                  </div>
-                </td>
-              </tr>
-              <tr>
-                <td>Lorem, ipsum.</td>
-                <td>Lorem, ipsum dolor.</td>
-                <td>
-                  <div className="d-flex flex-column align-items-center">
-                    <button className="btn btn-warning btn-sm mb-2">
-                      Edit
-                    </button>
-                    <button className="btn btn-danger btn-sm">Delete</button>
-                  </div>
-                </td>
-              </tr>
-              <tr>
-                <td>Lorem, ipsum.</td>
-                <td>Lorem, ipsum dolor.</td>
-                <td>
-                  <div className="d-flex flex-column align-items-center">
-                    <button className="btn btn-warning btn-sm mb-2">
-                      Edit
-                    </button>
-                    <button className="btn btn-danger btn-sm">Delete</button>
-                  </div>
-                </td>
-              </tr>
-              <tr>
-                <td>Lorem, ipsum.</td>
-                <td>Lorem, ipsum dolor.</td>
-                <td>
-                  <div className="d-flex flex-column align-items-center">
-                    <button className="btn btn-warning btn-sm mb-2">
-                      Edit
-                    </button>
-                    <button className="btn btn-danger btn-sm">Delete</button>
-                  </div>
-                </td>
-              </tr>
-              <tr>
-                <td>Lorem, ipsum.</td>
-                <td>Lorem, ipsum dolor.</td>
-                <td>
-                  <div className="d-flex flex-column align-items-center">
-                    <button className="btn btn-warning btn-sm mb-2">
-                      Edit
-                    </button>
-                    <button className="btn btn-danger btn-sm">Delete</button>
-                  </div>
-                </td>
-              </tr>
-              <tr>
-                <td>Lorem, ipsum.</td>
-                <td>Lorem, ipsum dolor.</td>
-                <td>
-                  <div className="d-flex flex-column align-items-center">
-                    <button className="btn btn-warning btn-sm mb-2">
-                      Edit
-                    </button>
-                    <button className="btn btn-danger btn-sm">Delete</button>
-                  </div>
-                </td>
-              </tr>
+              {list.map((item) => (
+                <tr key={item.id}>
+                  <td>{item.title}</td>
+                  <td>{item.subtitle}</td>
+                  <td>
+                    <div className="d-flex flex-column align-items-center">
+                      <button
+                        className="btn btn-warning btn-sm mb-2"
+                        onClick={() => handleEdit(item.id)}
+                      >
+                        Edit
+                      </button>
+                      <button
+                        className="btn btn-danger btn-sm"
+                        onClick={() => setTrainingToDelete(item.id)}
+                        data-bs-toggle="modal"
+                        data-bs-target="#modalPopup"
+                      >
+                        Delete
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              ))}
             </tbody>
           </table>
         </div>
