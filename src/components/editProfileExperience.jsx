@@ -1,8 +1,82 @@
-import React from "react";
+import React, { useState } from "react";
+import Joi from "joi-browser";
+import { toast } from "react-toastify";
+import {
+  getExperience,
+  saveExperience,
+  deleteExperience,
+} from "../services/fakeExperienceService";
+import Modal from "./modal";
+
+const schema = {
+  id: Joi.optional(),
+  user_id: Joi.required(),
+  title: Joi.string().required().label("Title"),
+  subtitle: Joi.string().required().label("Subtitle"),
+  start: Joi.string().required().label("Start"),
+  end: Joi.string().required().label("End"),
+  responsibilities: Joi.string().required().label("Responsibilities"),
+};
 
 function EditProfileExperience(props) {
+  const { list, current } = props.data;
+  const [experienceToDelete, setExperienceToDelete] = useState();
+
+  const handleSave = (e) => {
+    e.preventDefault();
+    console.log("Saving data", current);
+    const result = validate();
+    if (result) {
+      let message = "";
+      Object.values(result).map((str) => (message += ".\n" + str));
+      toast.error(message);
+    } else {
+      console.log("result :>> ", result);
+      saveExperience({ ...current });
+      toast.success("Experience saved successfully.");
+
+      const objWithNullValues = { ...current };
+      Object.keys(objWithNullValues).forEach((k) => {
+        if (k !== "user_id") objWithNullValues[k] = "";
+      });
+      props.setData(objWithNullValues);
+      props.refresh();
+    }
+  };
+
+  const handleEdit = async (experienceId) => {
+    const experience = await getExperience(experienceId);
+    props.setData({ ...experience });
+  };
+
+  const handleDelete = async () => {
+    if (experienceToDelete) {
+      await deleteExperience(experienceToDelete);
+      props.refresh();
+      setExperienceToDelete(null);
+    }
+  };
+
+  const validate = () => {
+    const result = Joi.validate(current, schema, {
+      abortEarly: false,
+    });
+    if (!result.error) return null;
+
+    const errors = {};
+    for (let item of result.error.details) errors[item.path[0]] = item.message;
+    return errors;
+  };
+
   return (
     <div className="container d-flex flex-column">
+      <Modal
+        id="modalPopup"
+        title="Delete"
+        body="Are you sure you want to delete this item?"
+        action={handleDelete}
+        actionMessage="Delete"
+      ></Modal>
       <div id="editpage" className="editpage row align-self-center">
         <div className="col">
           <div className="row mb-3 mt-3">
@@ -12,7 +86,18 @@ function EditProfileExperience(props) {
               </label>
             </div>
             <div className="col">
-              <input type="text" id="title" className="form-control" />
+              <input
+                type="text"
+                id="title"
+                className="form-control"
+                value={current.title}
+                onChange={(e) =>
+                  props.setData({
+                    ...current,
+                    title: e.currentTarget.value,
+                  })
+                }
+              />
             </div>
           </div>
           <div className="row mb-3 mt-3">
@@ -22,7 +107,18 @@ function EditProfileExperience(props) {
               </label>
             </div>
             <div className="col">
-              <input type="text" id="subtitle" className="form-control" />
+              <input
+                type="text"
+                id="subtitle"
+                className="form-control"
+                value={current.subtitle}
+                onChange={(e) =>
+                  props.setData({
+                    ...current,
+                    subtitle: e.currentTarget.value,
+                  })
+                }
+              />
             </div>
           </div>
           <div className="row mb-3 mt-3">
@@ -32,7 +128,18 @@ function EditProfileExperience(props) {
               </label>
             </div>
             <div className="col">
-              <input type="date" id="start" className="form-control" />
+              <input
+                type="date"
+                id="start"
+                className="form-control"
+                value={current.start}
+                onChange={(e) =>
+                  props.setData({
+                    ...current,
+                    start: e.currentTarget.value,
+                  })
+                }
+              />
             </div>
           </div>
           <div className="row mb-3 mt-3">
@@ -42,7 +149,18 @@ function EditProfileExperience(props) {
               </label>
             </div>
             <div className="col">
-              <input type="date" id="end" className="form-control" />
+              <input
+                type="date"
+                id="end"
+                className="form-control"
+                value={current.end}
+                onChange={(e) =>
+                  props.setData({
+                    ...current,
+                    end: e.currentTarget.value,
+                  })
+                }
+              />
             </div>
           </div>
           <div className="row mb-3">
@@ -53,11 +171,29 @@ function EditProfileExperience(props) {
               <textarea
                 className="form-control"
                 aria-label="Responsibilities"
+                value={current.responsibilities}
+                onChange={(e) =>
+                  props.setData({
+                    ...current,
+                    responsibilities: e.currentTarget.value,
+                  })
+                }
               ></textarea>
             </div>
           </div>
-          <button className="btn btn-primary btn-sm">Add</button>
-          <button className="btn btn-primary btn-sm ms-3">Next</button>
+          <button
+            disabled={validate()}
+            onClick={handleSave}
+            className="btn btn-primary btn-sm"
+          >
+            Save
+          </button>
+          <button
+            className="btn btn-primary btn-sm ms-3"
+            onClick={props.onNext}
+          >
+            Next
+          </button>
           <hr className="border border-primary opacity-75" />
         </div>
         <div className="col">
@@ -70,114 +206,30 @@ function EditProfileExperience(props) {
               </tr>
             </thead>
             <tbody>
-              <tr>
-                <td>MasHelper</td>
-                <td>Material at site helper</td>
-                <td>
-                  <div className="d-flex flex-column align-items-center">
-                    <button className="btn btn-warning btn-sm mb-2">
-                      Edit
-                    </button>
-                    <button className="btn btn-danger btn-sm">Delete</button>
-                  </div>
-                </td>
-              </tr>
-              <tr>
-                <td>Mindmap</td>
-                <td>A Mindmap app</td>
-                <td>
-                  <div className="d-flex flex-column align-items-center">
-                    <button className="btn btn-warning btn-sm mb-2">
-                      Edit
-                    </button>
-                    <button className="btn btn-danger btn-sm">Delete</button>
-                  </div>
-                </td>
-              </tr>
-              <tr>
-                <td>Resume Builder</td>
-                <td>Building resume form profiles</td>
-                <td>
-                  <div className="d-flex flex-column align-items-center">
-                    <button className="btn btn-warning btn-sm mb-2">
-                      Edit
-                    </button>
-                    <button className="btn btn-danger btn-sm">Delete</button>
-                  </div>
-                </td>
-              </tr>
-              <tr>
-                <td>Lorem, ipsum.</td>
-                <td>Lorem, ipsum dolor.</td>
-                <td>
-                  <div className="d-flex flex-column align-items-center">
-                    <button className="btn btn-warning btn-sm mb-2">
-                      Edit
-                    </button>
-                    <button className="btn btn-danger btn-sm">Delete</button>
-                  </div>
-                </td>
-              </tr>
-              <tr>
-                <td>Lorem, ipsum.</td>
-                <td>Lorem, ipsum dolor.</td>
-                <td>
-                  <div className="d-flex flex-column align-items-center">
-                    <button className="btn btn-warning btn-sm mb-2">
-                      Edit
-                    </button>
-                    <button className="btn btn-danger btn-sm">Delete</button>
-                  </div>
-                </td>
-              </tr>
-              <tr>
-                <td>Lorem, ipsum.</td>
-                <td>Lorem, ipsum dolor.</td>
-                <td>
-                  <div className="d-flex flex-column align-items-center">
-                    <button className="btn btn-warning btn-sm mb-2">
-                      Edit
-                    </button>
-                    <button className="btn btn-danger btn-sm">Delete</button>
-                  </div>
-                </td>
-              </tr>
-              <tr>
-                <td>Lorem, ipsum.</td>
-                <td>Lorem, ipsum dolor.</td>
-                <td>
-                  <div className="d-flex flex-column align-items-center">
-                    <button className="btn btn-warning btn-sm mb-2">
-                      Edit
-                    </button>
-                    <button className="btn btn-danger btn-sm">Delete</button>
-                  </div>
-                </td>
-              </tr>
-              <tr>
-                <td>Lorem, ipsum.</td>
-                <td>Lorem, ipsum dolor.</td>
-                <td>
-                  <div className="d-flex flex-column align-items-center">
-                    <button className="btn btn-warning btn-sm mb-2">
-                      Edit
-                    </button>
-                    <button className="btn btn-danger btn-sm">Delete</button>
-                  </div>
-                </td>
-              </tr>
-              <tr>
-                <td>Lorem, ipsum.</td>
-                <td>Lorem, ipsum dolor.</td>
-                <td>
-                  <div className="d-flex flex-column align-items-center">
-                    <button className="btn btn-warning btn-sm mb-2">
-                      Edit
-                    </button>
-                    <button className="btn btn-danger btn-sm">Delete</button>
-                  </div>
-                </td>
-              </tr>
+              {list.map((item) => (
+                <tr>
+                  <td>{item.title}</td>
+                  <td>{item.subtitle}</td>
+                  <td>
+                    <div class="d-flex flex-column align-items-center">
+                      <button
+                        class="btn btn-warning btn-sm mb-2"
+                        onClick={() => handleEdit(item.id)}
+                      >
+                        Edit
+                      </button>
+                      <button
+                        class="btn btn-danger btn-sm"
+                        onClick={() => setExperienceToDelete(item.id)}
+                        data-bs-toggle="modal"
+                        data-bs-target="#modalPopup"
+                      >
+                        Delete
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              ))}
             </tbody>
           </table>
         </div>

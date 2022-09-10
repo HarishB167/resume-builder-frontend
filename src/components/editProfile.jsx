@@ -6,6 +6,7 @@ import EditProfileSkillLanguage from "./editProfileSkillLanguage";
 import EditProfileTraining from "./editProfileTraining";
 import { getProjectListForUserId } from "../services/fakeProjectService";
 import { getEducationListForUserId } from "../services/fakeEducationService";
+import { getExperienceListForUserId } from "../services/fakeExperienceService";
 
 const EDIT_TABS = [
   { name: "project", label: "Add/Edit Project", Component: EditProfileProject },
@@ -59,7 +60,18 @@ function EditProfile(props) {
         score: "",
       },
     },
-    experience: { list: [], current: {} },
+    experience: {
+      list: [],
+      current: {
+        id: "",
+        user_id: userId,
+        title: "",
+        subtitle: "",
+        start: "",
+        end: "",
+        responsibilities: "",
+      },
+    },
     skillLanguage: { list: [], current: {} },
     training: { list: [], current: {} },
   });
@@ -74,14 +86,21 @@ function EditProfile(props) {
     setData({ ...data, education: { ...data.education, list: educations } });
   }
 
+  async function loadExperiences() {
+    const experiences = await getExperienceListForUserId(userId);
+    setData({ ...data, experience: { ...data.experience, list: experiences } });
+  }
+
   useEffect(() => {
     async function loadAllData() {
       const projects = await getProjectListForUserId(userId);
       const educations = await getEducationListForUserId(userId);
+      const experiences = await getExperienceListForUserId(userId);
       setData({
         ...data,
         project: { ...data.project, list: projects },
         education: { ...data.education, list: educations },
+        experience: { ...data.experience, list: experiences },
       });
     }
     loadAllData();
@@ -106,7 +125,7 @@ function EditProfile(props) {
   const refreshFuncs = {
     project: loadProjects,
     education: loadEducations,
-    // experience: loadExperiences,
+    experience: loadExperiences,
     // skillLanguage: loadSkillsLanguages,
     // training: loadTrainings,
   };
