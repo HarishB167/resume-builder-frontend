@@ -5,7 +5,7 @@ import {
   getEducation,
   saveEducation,
   deleteEducation,
-} from "../services/fakeEducationService";
+} from "../services/educationService";
 import Modal from "./modal";
 import SpinnerWhileLoading from "./common/spinnerWhileLoading";
 
@@ -33,7 +33,7 @@ function EditProfileEducation(props) {
     } else {
       setShowSpinner(true);
       console.log("result :>> ", result);
-      await saveEducation({ ...current });
+      await saveEducation(current.user_id, { ...current });
       toast.success("Education saved successfully.");
 
       const objWithNullValues = { ...current };
@@ -48,14 +48,14 @@ function EditProfileEducation(props) {
 
   const handleEdit = async (educationId) => {
     setShowSpinner(true);
-    const education = await getEducation(educationId);
+    const education = await getEducation(current.user_id, educationId);
     props.setData({ ...education });
     setShowSpinner(false);
   };
 
   const handleDelete = async () => {
     if (educationToDelete) {
-      await deleteEducation(educationToDelete);
+      await deleteEducation(current.user_id, educationToDelete);
       props.refresh();
       setEducationToDelete(null);
     }

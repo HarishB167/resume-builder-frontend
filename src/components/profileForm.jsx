@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import Joi from "joi-browser";
 import { toast } from "react-toastify";
-import { getUser, saveUser } from "../services/fakeUserService";
+import { getUser, saveUser } from "../services/userService";
 import SpinnerWhileLoading from "./common/spinnerWhileLoading";
 
 const schema = {

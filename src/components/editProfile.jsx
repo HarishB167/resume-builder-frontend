@@ -5,13 +5,13 @@ import EditProfileProject from "./editProfileProject";
 import EditProfileSkillLanguage from "./editProfileSkillLanguage";
 import EditProfileTraining from "./editProfileTraining";
 import SpinnerWhileLoading from "./common/spinnerWhileLoading";
-import { getProjectListForUserId } from "../services/fakeProjectService";
-import { getEducationListForUserId } from "../services/fakeEducationService";
-import { getExperienceListForUserId } from "../services/fakeExperienceService";
-import { getSkillListForUserId } from "../services/fakeSkillLanguageService";
-import { getLanguageListForUserId } from "../services/fakeSkillLanguageService";
-import { getTrainingListForUserId } from "../services/fakeTrainingService";
-import { getUserProfile } from "../services/fakeUserService";
+import { getProjectListForUserId } from "../services/projectService";
+import { getEducationListForUserId } from "../services/educationService";
+import { getExperienceListForUserId } from "../services/experienceService";
+import { getSkillListForUserId } from "../services/skillLanguageService";
+import { getLanguageListForUserId } from "../services/skillLanguageService";
+import { getTrainingListForUserId } from "../services/trainingService";
+import { getUserProfile } from "../services/userService";
 
 const EDIT_TABS = [
   { name: "project", label: "Add/Edit Project", Component: EditProfileProject },

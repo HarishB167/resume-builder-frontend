@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { deleteUser } from "../services/fakeUserService";
+import { deleteUser } from "../services/userService";
 import Modal from "./modal";
 import SpinnerWhileLoading from "./common/spinnerWhileLoading";
 
@@ -20,9 +20,9 @@ function Home(props) {
   const handleDelete = async () => {
     console.log("Deleting item", userToDelete);
     if (userToDelete) {
-      deleteUser(userToDelete);
-      setUserToDelete("");
+      await deleteUser(userToDelete);
       props.loadUserList();
+      setUserToDelete("");
     }
   };
   return (

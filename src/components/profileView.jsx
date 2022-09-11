@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import SpinnerWhileLoading from "./common/spinnerWhileLoading";
-import { getUserProfile } from "../services/fakeUserService";
+import { getUserProfile } from "../services/userService";
 
 function formatDateAsMonthDay(dateStr) {
   var parts = dateStr.split("-");

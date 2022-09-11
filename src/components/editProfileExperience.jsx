@@ -5,7 +5,7 @@ import {
   getExperience,
   saveExperience,
   deleteExperience,
-} from "../services/fakeExperienceService";
+} from "../services/experienceService";
 import Modal from "./modal";
 import SpinnerWhileLoading from "./common/spinnerWhileLoading";
 
@@ -35,7 +35,7 @@ function EditProfileExperience(props) {
     } else {
       setShowSpinner(true);
       console.log("result :>> ", result);
-      await saveExperience({ ...current });
+      await saveExperience(current.user_id, { ...current });
       toast.success("Experience saved successfully.");
 
       const objWithNullValues = { ...current };
@@ -50,16 +50,17 @@ function EditProfileExperience(props) {
 
   const handleEdit = async (experienceId) => {
     setShowSpinner(true);
-    const experience = await getExperience(experienceId);
+    const experience = await getExperience(current.user_id, experienceId);
     props.setData({ ...experience });
     setShowSpinner(false);
   };
 
   const handleDelete = async () => {
     if (experienceToDelete) {
-      await deleteExperience(experienceToDelete);
+      await deleteExperience(current.user_id, experienceToDelete);
       props.refresh();
       setExperienceToDelete(null);
+      toast.success("Experience deleted successfully");
     }
   };
 

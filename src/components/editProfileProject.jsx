@@ -5,7 +5,7 @@ import {
   getProject,
   saveProject,
   deleteProject,
-} from "../services/fakeProjectService";
+} from "../services/projectService";
 import Modal from "./modal";
 import SpinnerWhileLoading from "./common/spinnerWhileLoading";
 
@@ -47,7 +47,7 @@ function EditProfileProject(props) {
     } else {
       setShowSpinner(true);
       console.log("result :>> ", result);
-      await saveProject({ ...current });
+      await saveProject(current.user_id, { ...current });
       toast.success("Project saved successfully.");
 
       clearForm();
@@ -58,17 +58,19 @@ function EditProfileProject(props) {
 
   const handleEdit = async (projectId) => {
     setShowSpinner(true);
-    const project = await getProject(projectId);
+    const project = await getProject(current.user_id, projectId);
     props.setData({ ...project });
     setShowSpinner(false);
   };
 
   const handleDelete = async () => {
     if (projectToDelete) {
-      await deleteProject(projectToDelete);
+      setShowSpinner(true);
+      await deleteProject(current.user_id, projectToDelete);
       props.refresh();
       toast.success("Deleted successfully");
       setProjectToDelete(null);
+      setShowSpinner(false);
     }
   };
 

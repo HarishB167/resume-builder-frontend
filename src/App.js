@@ -8,7 +8,7 @@ import Home from "./components/home";
 import NavBar from "./components/navBar";
 import ProfileForm from "./components/profileForm";
 import ProfileView from "./components/profileView";
-import { getUserList } from "./services/fakeUserService";
+import { getUserList } from "./services/userService";
 
 function App() {
   const [userList, setUserList] = useState([]);
@@ -17,10 +17,6 @@ function App() {
     const userList = await getUserList();
     setUserList(userList);
   }
-
-  useEffect(() => {
-    loadUserList();
-  }, []);
 
   return (
     <React.Fragment>

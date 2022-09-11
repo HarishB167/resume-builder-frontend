@@ -8,7 +8,7 @@ import {
   saveLanguage,
   deleteSkill,
   deleteLanguage,
-} from "../services/fakeSkillLanguageService";
+} from "../services/skillLanguageService";
 import Modal from "./modal";
 import SpinnerWhileLoading from "./common/spinnerWhileLoading";
 
@@ -41,7 +41,7 @@ function EditProfileSkillLanguage(props) {
     } else {
       setShowSpinner(true);
       console.log("result :>> ", result);
-      await saveSkill({ ...currentSkill });
+      await saveSkill(currentSkill.user_id, { ...currentSkill });
       toast.success("Skill saved successfully.");
 
       const objWithNullValues = { ...currentSkill };
@@ -64,7 +64,7 @@ function EditProfileSkillLanguage(props) {
     } else {
       setShowSpinner(true);
       console.log("result :>> ", result);
-      await saveLanguage({ ...currentLanguage });
+      await saveLanguage(currentLanguage.user_id, { ...currentLanguage });
       toast.success("Language saved successfully.");
 
       const objWithNullValues = { ...currentLanguage };
@@ -79,21 +79,21 @@ function EditProfileSkillLanguage(props) {
 
   const handleEditSkill = async (skillId) => {
     setShowSpinner(true);
-    const skill = await getSkill(skillId);
+    const skill = await getSkill(currentSkill.user_id, skillId);
     props.setData({ ...skill }, "skill");
     setShowSpinner(false);
   };
 
   const handleEditLanguage = async (languageId) => {
     setShowSpinner(true);
-    const language = await getLanguage(languageId);
+    const language = await getLanguage(currentLanguage.user_id, languageId);
     props.setData({ ...language }, "language");
     setShowSpinner(false);
   };
 
   const handleDeleteSkill = async () => {
     if (skillToDelete) {
-      await deleteSkill(skillToDelete);
+      await deleteSkill(currentSkill.user_id, skillToDelete);
       props.refresh();
       setSkillToDelete(null);
     }
@@ -101,7 +101,7 @@ function EditProfileSkillLanguage(props) {
 
   const handleDeleteLanguage = async () => {
     if (languageToDelete) {
-      await deleteLanguage(languageToDelete);
+      await deleteLanguage(currentLanguage.user_id, languageToDelete);
       props.refresh();
       setLanguageToDelete(null);
     }

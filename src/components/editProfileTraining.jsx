@@ -5,7 +5,7 @@ import {
   getTraining,
   saveTraining,
   deleteTraining,
-} from "../services/fakeTrainingService";
+} from "../services/trainingService";
 import Modal from "./modal";
 import SpinnerWhileLoading from "./common/spinnerWhileLoading";
 
@@ -33,7 +33,7 @@ function EditProfileTraining(props) {
     } else {
       setShowSpinner(true);
       console.log("result :>> ", result);
-      await saveTraining({ ...current });
+      await saveTraining(current.user_id, { ...current });
       toast.success("Training saved successfully.");
 
       const objWithNullValues = { ...current };
@@ -48,14 +48,14 @@ function EditProfileTraining(props) {
 
   const handleEdit = async (trainingId) => {
     setShowSpinner(true);
-    const training = await getTraining(trainingId);
+    const training = await getTraining(current.user_id, trainingId);
     props.setData({ ...training });
     setShowSpinner(false);
   };
 
   const handleDelete = async () => {
     if (trainingToDelete) {
-      await deleteTraining(trainingToDelete);
+      await deleteTraining(current.user_id, trainingToDelete);
       toast.success("Training deleted successfully.");
       props.refresh();
       setTrainingToDelete(null);
