@@ -8,6 +8,7 @@ function Home(props) {
   const [userToDelete, setUserToDelete] = useState("");
 
   const [showSpinner, setShowSpinner] = useState(true);
+  const [isRefreshing, setIsRefreshing] = useState(false);
 
   useEffect(() => {
     async function loadData() {
@@ -16,6 +17,12 @@ function Home(props) {
     }
     loadData();
   }, []);
+
+  const handleRefresh = async () => {
+    setIsRefreshing(true);
+    await props.loadUserList();
+    setIsRefreshing(false);
+  };
 
   const handleDelete = async () => {
     console.log("Deleting item", userToDelete);
@@ -34,14 +41,24 @@ function Home(props) {
         action={handleDelete}
         actionMessage="Delete"
       ></Modal>
-      <div className="d-flex justify-content-between align-items-center">
+      <div className="d-flex align-items-center">
         <Link
           to="/create-profile"
           className="btn btn-outline-primary btn-sm mt-2 mb-2"
         >
           Create Profile
         </Link>
-        <button className="btn btn-primary btn-sm" onClick={props.loadUserList}>
+        <div className="ms-auto"></div>
+        <SpinnerWhileLoading
+          className="me-3"
+          style={{ width: "1rem", height: "1rem" }}
+          showSpinnerWhen={isRefreshing}
+        />
+        <button
+          className="btn btn-primary btn-sm"
+          onClick={handleRefresh}
+          disabled={isRefreshing}
+        >
           Refresh
         </button>
       </div>
@@ -79,12 +96,12 @@ function Home(props) {
                     <div className="d-flex flex-column align-items-center">
                       <Link
                         to={`${user.id}/edit-profile`}
-                        className="btn btn-warning btn-sm mb-2"
+                        className="btn btn-warning btn-sm mb-2 w-50"
                       >
                         Edit
                       </Link>
                       <button
-                        className="btn btn-danger btn-sm"
+                        className="btn btn-danger btn-sm w-50"
                         onClick={() => setUserToDelete(user.id)}
                         data-bs-toggle="modal"
                         data-bs-target="#modalPopup"

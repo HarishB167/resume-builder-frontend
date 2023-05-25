@@ -1,8 +1,13 @@
 import http from "./httpService";
 
 export async function getUserList() {
-  const result = await http.get("/people/");
-  return result.data;
+  let result = await http.get("/people/");
+  result = result.data.sort((a, b) =>
+    (a.first_name + a.last_name)
+      .toLowerCase()
+      .localeCompare((b.first_name + b.last_name).toLowerCase())
+  );
+  return result;
 }
 
 export async function getUser(userId) {

@@ -1,19 +1,23 @@
 import React from "react";
 
-function SpinnerWhileLoading(props) {
-  const spinnerType = props.spinnerType
-    ? props.spinnerType
-    : "border text-secondary";
+function SpinnerWhileLoading({
+  spinnerType,
+  showSpinnerWhen,
+  className,
+  children,
+  style,
+}) {
+  const spinType = spinnerType ? spinnerType : "border text-secondary";
   return (
     <React.Fragment>
-      {props.showSpinnerWhen && (
-        <div className={props.className}>
-          <div className={`spinner-${spinnerType}`} role="status">
+      {showSpinnerWhen && (
+        <div className={className}>
+          <div className={`spinner-${spinType}`} role="status" style={style}>
             <span className="visually-hidden">Loading...</span>
           </div>
         </div>
       )}
-      {!props.showSpinnerWhen && props.children}
+      {!showSpinnerWhen && children}
     </React.Fragment>
   );
 }
